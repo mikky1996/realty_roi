@@ -1,4 +1,5 @@
 import pandas as pd
+import typing as tp
 import matplotlib.pyplot as plt
 import matplotlib.ticker as mtick
 
@@ -6,36 +7,22 @@ from io import BytesIO
 from . import metric_units
 
 
-def get_grid_report(
+def get_report(
     input_summary: str,
     df: pd.DataFrame,
     return_as_stream: bool = False
-) -> None | BytesIO:
+) -> tp.Optional[BytesIO]:
     """
     Plot all metrics from a DataFrame with an input summary.
-
-    Parameters
-    ----------
-    input_summary : str
-        Input summary to be displayed at the top of the plot.
-    df : pd.DataFrame
-        DataFrame containing the data to be plotted. It should contain a "Year" column and one or more columns with the metrics to be plotted.
-    return_as_stream : bool, optional
-        If `True`, the plot is saved as a PNG byte stream and returned instead of displayed. Defaults to `False`.
-
-    Returns
-    -------
-    None | pd.DataFrame
-        If `return_as_stream` is `True`, a byte stream containing the plot is returned. Otherwise, nothing is returned.
-
-    Notes
-    -----
-    The plot is displayed using `matplotlib`, and the layout is determined by the number of metrics in the DataFrame.
-    Each metric is plotted as a line with a different color and marker.
-    The Y-axis is formatted based on the unit of the metric, which is determined by the `metric_units` dictionary.
+    :param input_summary: Description of the project
+    :param df: Data about profitability
+    :param return_as_stream: Should return a bytestream?
+    :return: None or bytestream
     """
+
     metrics = [col for col in df.columns if col != "Year"]
     num_metrics = len(metrics)
+
     cols = 2
     rows = (num_metrics + 1) // cols + ((num_metrics + 1) % cols > 0)
     fig, axes = plt.subplots(rows, cols, figsize=(14, rows * 3), constrained_layout=True)
@@ -79,9 +66,10 @@ def get_grid_report(
         axes[i].axis('off')
 
     # Save to byte stream if required
+    # Returns a bytestream pdf
     if return_as_stream:
         buf = BytesIO()
-        plt.savefig(buf, format='png', bbox_inches='tight')
+        plt.savefig(buf, format='pdf', bbox_inches='tight')
         buf.seek(0)
         plt.close(fig)
         return buf

@@ -10,5 +10,5 @@ metric_units = {
     "Break-Even Occupancy Rate": "%",
     "Remaining Loan": "USD",
     "Total ROI": "%",
-    "Equiv Avg Annual IR": "%"
+    "Constant Rate of Return": "%"
 }
